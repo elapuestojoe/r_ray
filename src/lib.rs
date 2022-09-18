@@ -1,3 +1,4 @@
+pub mod camera;
 pub mod geometry;
 pub mod hittable;
 pub mod ray {
