@@ -1,3 +1,5 @@
+pub mod geometry;
+pub mod hittable;
 pub mod ray {
     use num::Float;
     use r_vector::vector::Vector;
@@ -38,7 +40,7 @@ mod tests {
     use crate::ray::Ray;
     use r_vector::vector::Vector;
     #[test]
-    fn it_works() {
+    fn point_at_time() {
         let ray = Ray::new(
             Vector::<f32>::new(2.0, 2.0, 3.0),
             Vector::<f32>::new(10.0, 5.0, 10.0),
