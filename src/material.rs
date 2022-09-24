@@ -18,7 +18,7 @@ pub mod material {
     use r_float::Float;
     use r_vector::vector::Vector;
 
-    pub trait Material<T>: Sized
+    pub trait Material<T>
     where
         T: Float,
     {

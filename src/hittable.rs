@@ -1,5 +1,5 @@
 pub mod hittable {
-    use crate::ray::Ray;
+    use crate::{material::material::Material, ray::Ray};
     use r_float::Float;
     use r_vector::vector::Vector;
     pub struct HitRecord<T>
@@ -28,7 +28,13 @@ pub mod hittable {
     where
         T: Float,
     {
-        fn hit(&self, ray: &Ray<T>, t_min: T, t_max: T, hit_record: &mut HitRecord<T>) -> bool;
+        fn hit(
+            &mut self,
+            ray: &Ray<T>,
+            t_min: T,
+            t_max: T,
+            hit_record: &mut HitRecord<T>,
+        ) -> Option<Box<&mut dyn Material<T>>>;
     }
 
     pub struct HittableList<T>
@@ -51,20 +57,27 @@ pub mod hittable {
     where
         T: Float,
     {
-        fn hit(&self, ray: &Ray<T>, t_min: T, t_max: T, hit_record: &mut HitRecord<T>) -> bool {
+        fn hit(
+            &mut self,
+            ray: &Ray<T>,
+            t_min: T,
+            t_max: T,
+            hit_record: &mut HitRecord<T>,
+        ) -> Option<Box<&mut dyn Material<T>>> {
             let mut temporal_record = HitRecord::new();
-            let mut hit_anything = false;
+            let mut closest_hit: Option<Box<&mut dyn Material<T>>> = Option::None;
             let mut closest_so_far = t_max;
-            for element in self.elements.iter() {
-                if element.hit(ray, t_min, closest_so_far, &mut temporal_record) {
-                    hit_anything = true;
+            for element in self.elements.iter_mut() {
+                let hit = element.hit(ray, t_min, closest_so_far, &mut temporal_record);
+                if hit.is_some() {
+                    closest_hit = hit;
                     closest_so_far = temporal_record.t;
                 }
             }
-            if hit_anything {
+            if closest_hit.is_some() {
                 *hit_record = temporal_record;
             }
-            hit_anything
+            closest_hit
         }
     }
 }

@@ -33,7 +33,13 @@ pub mod sphere {
         M: Material<T>,
         T: Float,
     {
-        fn hit(&self, ray: &Ray<T>, t_min: T, t_max: T, hit_record: &mut HitRecord<T>) -> bool {
+        fn hit(
+            &mut self,
+            ray: &Ray<T>,
+            t_min: T,
+            t_max: T,
+            hit_record: &mut HitRecord<T>,
+        ) -> Option<Box<&mut dyn Material<T>>> {
             let oc = ray.origin() - &self.center;
 
             let a = ray.direction().dot(&ray.direction());
@@ -42,7 +48,7 @@ pub mod sphere {
             let discriminant = b * b - a * c;
 
             if discriminant.is_sign_negative() {
-                return false;
+                return Option::None;
             }
 
             let temp_a = (-b - (b * b - a * c).sqrt()) / a;
@@ -51,7 +57,7 @@ pub mod sphere {
                 hit_record.t = temp_a;
                 hit_record.point_at_t = ray.point_at_time(temp_a);
                 hit_record.normal = (&hit_record.point_at_t - &self.center) / self.radius;
-                return true;
+                return Option::Some(Box::new(&mut self.material));
             }
 
             let temp_b = (-b + (b * b - a * c).sqrt()) / a;
@@ -59,9 +65,9 @@ pub mod sphere {
                 hit_record.t = temp_b;
                 hit_record.point_at_t = ray.point_at_time(temp_b);
                 hit_record.normal = (&hit_record.point_at_t - &self.center) / self.radius;
-                return true;
+                return Option::Some(Box::new(&mut self.material));
             }
-            false
+            Option::None
         }
     }
 }
