@@ -1,6 +1,6 @@
 pub mod camera {
     use crate::ray::Ray;
-    use num::Float;
+    use r_float::Float;
     use r_vector::vector::Vector;
     pub struct Camera<T>
     where
@@ -47,17 +47,17 @@ mod tests {
 
     #[test]
     fn camera() {
-        let lower_left_corner = Vector::<f32>::new(-2.0, -1.0, -1.0);
-        let horizontal = Vector::<f32>::new(4.0, 0.0, 0.0);
-        let vertical = Vector::<f32>::new(0.0, 2.0, 0.0);
-        let origin = Vector::<f32>::new(0.0, 0.0, 0.0);
+        let lower_left_corner = Vector::new(-2f32, -1f32, -1f32);
+        let horizontal = Vector::new(4f32, 0f32, 0f32);
+        let vertical = Vector::new(0f32, 2f32, 0f32);
+        let origin = Vector::<f32>::new(0f32, 0f32, 0f32);
         let camera = Camera::new(origin, lower_left_corner, horizontal, vertical);
 
         assert_eq!(
-            camera.get_ray(1.0, 1.0),
+            camera.get_ray(1f32, 1f32),
             Ray::<f32>::new(
-                Vector::<f32>::new(0.0, 0.0, 0.0),
-                Vector::<f32>::new(2.0, 1.0, -1.0)
+                Vector::<f32>::new(0f32, 0f32, 0f32),
+                Vector::<f32>::new(2f32, 1f32, -1f32)
             )
         );
     }

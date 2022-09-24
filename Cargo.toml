@@ -7,4 +7,5 @@ edition = "2021"
 
 [dependencies]
 r_vector = { git = "https://github.com/elapuestojoe/r_vector", branch = "main" }
+r_float =  { git = "https://github.com/elapuestojoe/r_float", branch = "main" }
 num = "0.4"

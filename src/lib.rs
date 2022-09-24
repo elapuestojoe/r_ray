@@ -1,8 +1,9 @@
 pub mod camera;
 pub mod geometry;
 pub mod hittable;
+pub mod material;
 pub mod ray {
-    use num::Float;
+    use r_float::Float;
     use r_vector::vector::Vector;
 
     #[derive(PartialEq, Debug)]

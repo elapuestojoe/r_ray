@@ -1,30 +1,36 @@
 pub mod sphere {
     use crate::hittable::hittable::{HitRecord, Hittable};
+    use crate::material::material::Material;
     use crate::ray::Ray;
-    use num::Float;
+    use r_float::Float;
     use r_vector::vector::{Vector, VectorOperations};
-    pub struct Sphere<T>
+    pub struct Sphere<M, T>
     where
+        M: Material<T>,
         T: Float,
     {
         center: Vector<T>,
         radius: T,
+        pub material: M,
     }
 
-    impl<T> Sphere<T>
+    impl<M, T> Sphere<M, T>
     where
+        M: Material<T>,
         T: Float,
     {
-        pub fn new(center: Vector<T>, radius: T) -> Sphere<T> {
+        pub fn new(center: Vector<T>, radius: T, material: M) -> Sphere<M, T> {
             Sphere {
-                center: center,
-                radius: radius,
+                center,
+                radius,
+                material,
             }
         }
     }
 
-    impl<T> Hittable<T> for Sphere<T>
+    impl<M, T> Hittable<T> for Sphere<M, T>
     where
+        M: Material<T>,
         T: Float,
     {
         fn hit(&self, ray: &Ray<T>, t_min: T, t_max: T, hit_record: &mut HitRecord<T>) -> bool {
@@ -62,29 +68,25 @@ pub mod sphere {
 
 #[cfg(test)]
 mod tests {
-    use crate::hittable::hittable::HitRecord;
-    use crate::ray::Ray;
-    use crate::{geometry::sphere::Sphere, hittable::hittable::Hittable};
+    use crate::geometry::sphere::Sphere;
+    use crate::material::materials_impl::Lambertian;
+    use crate::material::materials_impl::Metal;
     use r_vector::vector::Vector;
     #[test]
-    fn sphere_hits() {
-        let sphere = Sphere::<f32>::new(Vector::<f32>::new(0.0, 0.0, 0.0), 1.0);
-        let ray = Ray::<f32>::new(
+    fn sphere_lambertian() {
+        let _sphere = Sphere::new(
             Vector::<f32>::new(0.0, 0.0, 0.0),
-            Vector::<f32>::new(1.0, 0.0, 0.0),
+            1.0,
+            Lambertian::new(Vector::new(0.8, 0.3, 0.3)),
         );
-        let mut hit_record = HitRecord::new();
-        assert_eq!(sphere.hit(&ray, 0.0, 10.0, &mut hit_record), true);
     }
 
     #[test]
-    fn sphere_no_hits() {
-        let sphere = Sphere::<f32>::new(Vector::<f32>::new(0.0, 0.0, 0.0), 1.0);
-        let ray = Ray::<f32>::new(
+    fn sphere_metal() {
+        let _sphere = Sphere::new(
             Vector::<f32>::new(0.0, 0.0, 0.0),
-            Vector::<f32>::new(0.0, 0.0, 0.0),
+            1.0,
+            Metal::new(Vector::new(0.8, 0.3, 0.3)),
         );
-        let mut hit_record = HitRecord::new();
-        assert_eq!(sphere.hit(&ray, 0.0, 10.0, &mut hit_record), false);
     }
 }

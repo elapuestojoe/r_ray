@@ -1,6 +1,6 @@
 pub mod hittable {
     use crate::ray::Ray;
-    use num::Float;
+    use r_float::Float;
     use r_vector::vector::Vector;
     pub struct HitRecord<T>
     where
@@ -52,7 +52,7 @@ pub mod hittable {
         T: Float,
     {
         fn hit(&self, ray: &Ray<T>, t_min: T, t_max: T, hit_record: &mut HitRecord<T>) -> bool {
-            let mut temporal_record = HitRecord::<T>::new();
+            let mut temporal_record = HitRecord::new();
             let mut hit_anything = false;
             let mut closest_so_far = t_max;
             for element in self.elements.iter() {
@@ -66,5 +66,44 @@ pub mod hittable {
             }
             hit_anything
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::geometry::sphere::Sphere;
+    use crate::material::materials_impl::{Lambertian, Metal};
+    use r_vector::vector::Vector;
+
+    use super::hittable::HittableList;
+
+    #[test]
+    fn spheres_hittable_list() {
+        let sphere_1 = Sphere::new(
+            Vector::<f32>::new(0.0, 0.0, 0.0),
+            1.0,
+            Lambertian::new(Vector::new(0.8, 0.3, 0.3)),
+        );
+        let sphere_2 = Sphere::new(
+            Vector::new(0f32, -100.5, -1f32),
+            100f32,
+            Lambertian::new(Vector::new(0.8, 0.8, 0f32)),
+        );
+        let sphere_3 = Sphere::new(
+            Vector::new(1f32, 0f32, -1f32),
+            0.5,
+            Metal::new(Vector::new(0.8, 0.6, 0.2)),
+        );
+        let sphere_4 = Sphere::new(
+            Vector::new(-1f32, 0f32, -1f32),
+            0.5,
+            Metal::new(Vector::new(0.8, 0.8, 0.8)),
+        );
+        HittableList::new(vec![
+            Box::new(sphere_1),
+            Box::new(sphere_2),
+            Box::new(sphere_3),
+            Box::new(sphere_4),
+        ]);
     }
 }
