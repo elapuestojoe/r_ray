@@ -68,12 +68,9 @@ pub mod materials_impl {
             attenuation: &mut Vector<T>,
             scattered: &mut Ray<T>,
         ) -> bool {
-            let target =
-                &hit_record.point_at_t + &hit_record.normal + internal::random_in_unit_sphere();
-            *scattered = Ray::new(
-                hit_record.point_at_t.clone(),
-                target - &hit_record.point_at_t,
-            );
+            let scatter_direction = &hit_record.normal + &internal::random_in_unit_sphere();
+
+            *scattered = Ray::new(hit_record.point_at_t.clone(), scatter_direction);
             *attenuation = self.albedo.clone();
             true
         }
@@ -94,7 +91,7 @@ pub mod materials_impl {
             Metal { albedo }
         }
         fn reflect(vector: &Vector<T>, n: &Vector<T>) -> Vector<T> {
-            vector - &(n * vector.dot(n) * T::from_i32(2))
+            vector - &(n * (vector.dot(n) * T::from_i32(2)))
         }
     }
 
@@ -109,7 +106,7 @@ pub mod materials_impl {
             attenuation: &mut Vector<T>,
             scattered: &mut Ray<T>,
         ) -> bool {
-            let reflected = Self::reflect(ray.direction(), &hit_record.normal);
+            let reflected = Self::reflect(&ray.direction().unit_vector(), &hit_record.normal);
             *scattered = Ray::new(hit_record.point_at_t.clone(), reflected);
             *attenuation = self.albedo.clone();
             scattered.direction().dot(&hit_record.normal) > T::zero()
