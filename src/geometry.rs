@@ -92,7 +92,7 @@ mod tests {
         let _sphere = Sphere::new(
             Vector::<f32>::new(0.0, 0.0, 0.0),
             1.0,
-            Metal::new(Vector::new(0.8, 0.3, 0.3)),
+            Metal::new(Vector::new(0.8, 0.3, 0.3), 0.3),
         );
     }
 }

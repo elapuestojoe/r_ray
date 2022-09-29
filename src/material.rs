@@ -39,7 +39,7 @@ pub mod materials_impl {
     use r_float::Float;
     use r_vector::vector::{Vector, VectorOperations};
 
-    use super::internal;
+    use super::internal::{self, random_in_unit_sphere};
 
     pub struct Lambertian<T>
     where
@@ -81,14 +81,22 @@ pub mod materials_impl {
         T: Float,
     {
         albedo: Vector<T>,
+        fuzz_factor: T,
     }
 
     impl<T> Metal<T>
     where
         T: Float,
     {
-        pub fn new(albedo: Vector<T>) -> Metal<T> {
-            Metal { albedo }
+        pub fn new(albedo: Vector<T>, fuzz_factor: T) -> Metal<T> {
+            let mut fuzz_factor_normalized = T::one();
+            if fuzz_factor < T::one() {
+                fuzz_factor_normalized = fuzz_factor
+            }
+            Metal {
+                albedo,
+                fuzz_factor: fuzz_factor_normalized,
+            }
         }
         fn reflect(vector: &Vector<T>, n: &Vector<T>) -> Vector<T> {
             vector - &(n * (vector.dot(n) * T::from_i32(2)))
@@ -107,7 +115,10 @@ pub mod materials_impl {
             scattered: &mut Ray<T>,
         ) -> bool {
             let reflected = Self::reflect(&ray.direction().unit_vector(), &hit_record.normal);
-            *scattered = Ray::new(hit_record.point_at_t.clone(), reflected);
+            *scattered = Ray::new(
+                hit_record.point_at_t.clone(),
+                reflected + (random_in_unit_sphere() * self.fuzz_factor),
+            );
             *attenuation = self.albedo.clone();
             scattered.direction().dot(&hit_record.normal) > T::zero()
         }
